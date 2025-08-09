@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wajd DZ - الصفحة الرئيسية</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>منصة Wajd DZ</header>
+
+  <div class="button-container">
+    <a href="login.html" class="button-like">تسجيل الدخول</a>
+    <a href="register.html" class="button-like">إنشاء حساب</a>
+  </div>
+
+  <div class="services-list">
+    <div class="service-item"><span class="service-emoji">🔧</span> بلومبي</div>
+    <div class="service-item"><span class="service-emoji">🎨</span> صباغ</div>
+    <div class="service-item"><span class="service-emoji">🛠️</span> صيانة أجهزة كهرو منزلية</div>
+    <div class="service-item"><span class="service-emoji">📦</span> حمال </div>
+    <div class="service-item"><span class="service-emoji">❄️</span> تكييف وتدفئة</div>
+    <div class="service-item"><span class="service-emoji">📡</span> تركيب بارابول</div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Firebase Config -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAruOLmBADLDxholr9tvmvFSIwTVH5gbcE",
+      authDomain: "wajddz.firebaseapp.com",
+      projectId: "wajddz",
+      storageBucket: "wajddz.firebasestorage.app",
+      messagingSenderId: "1049758782307",
+      appId: "1:1049758782307:web:87d2582b9b963d3e983956"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <script>
+    // تأكد من تسجيل دخول المستخدم
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        console.log("مرحباً، " + (user.displayName || user.email));
+
+        // طلب الموقع الجغرافي
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              console.log("خط العرض: " + position.coords.latitude);
+              console.log("خط الطول: " + position.coords.longitude);
+              // هنا يمكنك إرسال الموقع إلى قاعدة بيانات أو استخدامه حسب حاجتك
+            },
+            error => {
+              console.error("خطأ في الحصول على الموقع: ", error.message);
+            }
+          );
+        } else {
+          console.error("المتصفح لا يدعم خاصية الموقع الجغرافي");
+        }
+      } else {
+        console.log("المستخدم غير مسجل الدخول");
+      }
+    });
+  </script>
+</body>
+</html>

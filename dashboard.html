@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>لوحة التحكم - Wajd DZ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>لوحة التحكم</header>
+  <main>
+    <h2 id="welcomeMsg">جارٍ التحميل...</h2>
+    <p><strong>البريد الإلكتروني:</strong> <span id="userEmail"></span></p>
+    <p><strong>الاسم الكامل:</strong> <span id="userName"></span></p>
+    <p><strong>موقعك الحالي:</strong></p>
+    <div id="map"></div>
+    <button id="logoutBtn" class="button-like" style="margin-top:20px;">تسجيل خروج</button>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- إعدادات Firebase -->
+  <script src="../js/firebase-config.js"></script>
+
+  <!-- تحميل مكتبة Leaflet للخريطة -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+zjKyb7ng+J2XYu0r6HzN7H2mV/ZyRtyXt+PzvRyk="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o+HdWExdgiqTk4FVMRzHkMjOfyHld9p3cRjfqg/kNUI="
+    crossorigin=""
+  ></script>
+
+  <!-- كود التطبيق -->
+  <script>
+    const welcomeMsg = document.getElementById('welcomeMsg');
+    const userEmail = document.getElementById('userEmail');
+    const userName = document.getElementById('userName');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // التهيئة
+    let map, marker;
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const uid = user.uid;
+      userEmail.textContent = user.email || 'غير معروف';
+      userName.textContent = user.displayName || 'غير معروف';
+
+      // جلب بيانات الموقع من Firestore
+      firebase.firestore().collection('users').doc(uid).get()
+        .then(doc => {
+          if (doc.exists && doc.data().location) {
+            const loc = doc.data().location;
+            welcomeMsg.textContent = `مرحباً، ${user.displayName || user.email}`;
+
+            // عرض الموقع على الخريطة
+            map = L.map('map').setView([loc.latitude, loc.longitude], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            marker = L.marker([loc.latitude, loc.longitude]).addTo(map)
+              .bindPopup('موقعك الحالي')
+              .openPopup();
+
+          } else {
+            welcomeMsg.textContent = 'لم يتم العثور على موقعك.';
+          }
+        })
+        .catch(() => {
+          welcomeMsg.textContent = 'حدث خطأ في جلب بيانات الموقع.';
+        });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      firebase.auth().signOut().then(() => {
+        window.location.href = 'login.html';
+      });
+    });
+  </script>
+</body>
+</html>

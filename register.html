@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>إنشاء حساب جديد - Wajd DZ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>إنشاء حساب جديد</header>
+  <main>
+    <label for="accountType">نوع الحساب</label>
+    <select id="accountType" name="accountType" required>
+      <option value="" disabled selected>اختر نوع الحساب</option>
+      <option value="user">مستخدم عادي</option>
+      <option value="worker">عامل</option>
+    </select>
+
+    <label for="fullName">الاسم الكامل</label>
+    <input type="text" id="fullName" placeholder="الاسم الكامل" required />
+
+    <label for="email">البريد الإلكتروني</label>
+    <input type="email" id="email" placeholder="البريد الإلكتروني" required />
+
+    <label for="password">كلمة المرور</label>
+    <input type="password" id="password" placeholder="كلمة المرور" required />
+
+    <label for="confirmPassword">تأكيد كلمة المرور</label>
+    <input type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور" required />
+
+    <div id="workerFields" aria-hidden="true">
+      <label for="state">الولاية</label>
+      <select id="state" name="state">
+        <option value="" disabled selected>اختر الولاية</option>
+      </select>
+
+      <label for="jobType">نوع العمل</label>
+      <select id="jobType" name="jobType">
+        <option value="" disabled selected>اختر نوع العمل</option>
+        <option value="plumber">🔧 بلومبي</option>
+        <option value="painter">🎨 صباغ</option>
+        <option value="applianceRepair">🛠️ صيانة أجهزة كهرو منزلية</option>
+        <option value="mover">📦 حمال أثاث</option>
+        <option value="ac">❄️ تكييف وتدفئة</option>
+        <option value="satellite">📡 تركيب بارابول</option>
+      </select>
+    </div>
+
+    <button class="button-like" id="registerBtn">إنشاء حساب</button>
+
+    <p>
+      لديك حساب؟ <a href="login.html">تسجيل الدخول</a>
+    </p>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- إعدادات Firebase -->
+  <script src="../js/firebase-config.js"></script>
+
+  <!-- كود التسجيل -->
+  <script src="../js/register.js"></script>
+
+  <script>
+    // إظهار وإخفاء حقول العامل حسب نوع الحساب
+    const accountType = document.getElementById('accountType');
+    const workerFields = document.getElementById('workerFields');
+
+    accountType.addEventListener('change', () => {
+      if (accountType.value === 'worker') {
+        workerFields.style.display = 'block';
+        workerFields.setAttribute('aria-hidden', 'false');
+        // تعيين required على حقول العامل
+        document.getElementById('state').setAttribute('required', 'true');
+        document.getElementById('jobType').setAttribute('required', 'true');
+      } else {
+        workerFields.style.display = 'none';
+        workerFields.setAttribute('aria-hidden', 'true');
+        // إزالة required من حقول العامل
+        document.getElementById('state').removeAttribute('required');
+        document.getElementById('jobType').removeAttribute('required');
+      }
+    });
+
+    // إضافة الـ 58 ولاية في قائمة الولاية
+    const states = [
+      "أدرار","الشلف","الأغواط","أم البواقي","باتنة","بجاية","بسكرة","بشار","البليدة",
+      "البويرة","تمنراست","تبسة","تلمسان","تيارت","تيزي وزو","الجزائر","الجلفة","جيجل",
+      "سطيف","سعيدة","سكيكدة","سيدي بلعباس","عنابة","قالمة","قسنطينة","المدية","المسيلة",
+      "معسكر","ورقلة","وهران","البيض","إليزي","برج بوعريريج","بومرداس","الطارف","تندوف",
+      "تيسمسيلت","الوادي","خنشلة","سوق أهراس","تيبازة","ميلة","عين الدفلى","النعامة",
+      "عين تيموشنت","غرداية","غليزان","مستغانم","مسيلة","معسكر","المدية","غرداية",
+      "غليزان","سطيف","سوق أهراس","ميلة","برج بوعريريج"
+    ];
+
+    const stateSelect = document.getElementById('state');
+    states.forEach(state => {
+      const option = document.createElement('option');
+      option.value = state;
+      option.textContent = state;
+      stateSelect.appendChild(option);
+    });
+  </script>
+</body>
+</html>
